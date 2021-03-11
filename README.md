@@ -1,16 +1,50 @@
-# statedemo
+# Night and Day
 
-A new Flutter project.
+A mobile app about state management in Flutter
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## Commandes utiles
 
-A few resources to get you started if this is your first Flutter project:
+- installer les dépendances :
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+  `flutter pub get`
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- vérifier l'installation de Flutter :
+
+  `flutter doctor`
+
+- démarrer l'application mobile :
+
+  - démarrer l'émulateur mobile ou brancher un terminal mobile (mode développeur activé + écran dévérouillé)
+
+  - depuis la racine du dossier mobileapp
+
+  `flutter run`
+
+- hot reloading :
+
+  `r`
+
+- hot restarting :
+
+  `R`
+
+## Crédits
+
+- Design by :
+
+  - Smashicons from https://www.flaticon.com
+  - Freepik from https://www.flaticon.com
+
+---
+
+**Alexandre Leroux**
+
+alex@sherpa.one
+
+_Enseignant vacataire à l'Université de Lorraine_
+
+- IUT Nancy-Charlemagne (LP Ciasie)
+
+- Institut des Sciences du Digital (Masters Sciences Cognitives)

@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
 
-class Button extends StatefulWidget {
-  Button({Key key, this.visited}) : super(key: key);
+class SwitchButton extends StatefulWidget {
+  SwitchButton({
+    Key key,
+    @required this.onChange,
+    @required this.defaultStatus,
+    @required this.onLabel,
+    @required this.offLabel,
+    @required this.onColor,
+    @required this.offColor,
+  }) : super(key: key);
 
-  final bool visited;
+  final bool defaultStatus;
+  final String onLabel;
+  final String offLabel;
+  final Color onColor;
+  final Color offColor;
+  final Function onChange;
 
   @override
-  _ButtonState createState() => _ButtonState();
+  _SwitchButtonState createState() => _SwitchButtonState();
 }
 
-class _ButtonState extends State<Button> {
-  int _status = 0;
+class _SwitchButtonState extends State<SwitchButton> {
+  bool _status = false;
 
   @override
   void initState() {
-    if (widget.visited) {
+    if (widget.defaultStatus) {
       setState(() {
-        _status = 1;
+        _status = widget.defaultStatus;
       });
     }
 
@@ -24,27 +37,27 @@ class _ButtonState extends State<Button> {
   }
 
   void _onPress() {
-    if (_status == 0) {
-      setState(() {
-        _status = 1;
-      });
-    } else if (_status == 1) {
-      setState(() {
-        _status = 0;
-      });
-    }
+    setState(() {
+      _status = !_status;
+    });
+
+    widget.onChange(_status);
+  }
+
+  Color _getColorAccordingToStatus() {
+    return (_status) ? widget.onColor : widget.offColor;
+  }
+
+  String _getLabel() {
+    return (_status) ? widget.onLabel : widget.offLabel;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(_status.toString()),
-        RaisedButton(
-          onPressed: () => _onPress(),
-          child: Text("click"),
-        )
-      ],
+    return FlatButton(
+      onPressed: () => _onPress(),
+      child: Text(_getLabel()),
+      color: _getColorAccordingToStatus(),
     );
   }
 }

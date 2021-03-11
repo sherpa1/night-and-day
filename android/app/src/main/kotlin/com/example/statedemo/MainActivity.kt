@@ -1,4 +1,4 @@
-package com.example.statedemo
+package com.example.nightandday
 
 import io.flutter.embedding.android.FlutterActivity
 

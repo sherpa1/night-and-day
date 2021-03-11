@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:statedemo/MyApp.dart';
+import 'package:night_and_day/NightAndDay.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(NightAndDay());
 }
