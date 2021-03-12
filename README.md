@@ -1,6 +1,8 @@
 # Night and Day
 
-A mobile app about state management in Flutter
+Illustration de la gestion de l'état applicatif dans Flutter
+
+---
 
 ---
 

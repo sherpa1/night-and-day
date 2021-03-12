@@ -22,4 +22,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/night.png
+    - assets/images/evening.png
     - assets/images/day.png
+  fonts:
+    - family: FredokaOne
+      fonts:
+        - asset: assets/fonts/FredokaOne-Regular.ttf
