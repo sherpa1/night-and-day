@@ -6,15 +6,11 @@ class ClockButton extends StatefulWidget {
     @required this.onDayChange,
     @required this.onTimeChange,
     @required this.defaultDay,
-    @required this.onColor,
-    @required this.offColor,
   }) : super(key: key);
 
   final Function onDayChange;
   final Function onTimeChange;
   final bool defaultDay; //value set from widget's parent
-  final Color onColor;
-  final Color offColor;
 
   @override
   _ClockButtonState createState() => _ClockButtonState();
@@ -71,7 +67,7 @@ class _ClockButtonState extends State<ClockButton> {
   }
 
   Color _getColor() {
-    return (_newDay) ? widget.onColor : widget.offColor;
+    return (_newDay) ? Colors.yellow[600] : Colors.blueGrey;
   }
 
   @override

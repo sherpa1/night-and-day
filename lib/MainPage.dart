@@ -11,8 +11,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  bool _isDay;
-  int _hour;
+  bool _isDay = false;
+  int _hour = 0;
   DateTime _now = DateTime.now();
 
   @override
@@ -149,8 +149,6 @@ class _MainPageState extends State<MainPage> {
               onDayChange: _onDayChange,
               onTimeChange: _onTimeChange,
               defaultDay: _isDay,
-              onColor: Colors.yellow[600],
-              offColor: Colors.blueGrey,
             ),
           ],
         ),
