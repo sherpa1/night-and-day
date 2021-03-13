@@ -4,9 +4,7 @@ import 'package:night_and_day/models/Today.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MainPage({Key key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 

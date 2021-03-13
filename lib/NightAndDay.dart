@@ -12,7 +12,7 @@ class NightAndDay extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainPage(title: appTitle),
+      home: MainPage(),
     );
   }
 }
