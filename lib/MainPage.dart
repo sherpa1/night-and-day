@@ -11,28 +11,46 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  bool _isDay = false;
-  int _hour = 0;
-  DateTime _now = DateTime.now();
+  bool _darkMode; //from >=18 to <6
+  int _hour;
+  DateTime _now;
 
   @override
   void initState() {
-    _isDay = true;
+    setState(() {
+      var nowHour = DateTime.now().hour;
+
+      if (nowHour >= 0 && nowHour < 6) _hour = 0;
+      if (nowHour >= 6 && nowHour < 12) _hour = 6;
+      if (nowHour >= 12 && nowHour < 18) _hour = 12;
+      if (nowHour >= 18 && nowHour < 0) _hour = 18;
+
+      _now = DateTime.now();
+
+      _darkMode = true;
+      _hour = 0;
+    });
+
     super.initState();
   }
 
   void _onDayChange(bool day) {
-    var dayWas = _isDay;
-
     setState(() {
-      _isDay = day;
-      if (_isDay && _isDay != dayWas) _now = _now.add(new Duration(days: 1));
+      _now = _now.add(
+        new Duration(
+          days: 1,
+        ),
+      );
     });
   }
 
   void _onTimeChange(int hour) {
     setState(() {
       _hour = hour;
+      if (_hour >= 18 && _hour < 6)
+        _darkMode = true;
+      else
+        _darkMode = false;
     });
   }
 
@@ -71,10 +89,10 @@ class _MainPageState extends State<MainPage> {
         return Colors.grey.shade900;
         break;
       case 6:
-        return Colors.yellow[100];
+        return Colors.yellow[300];
         break;
       case 12:
-        return Colors.yellow[400];
+        return Colors.yellow[500];
         break;
       case 18:
         return Colors.blueGrey[600];
@@ -90,18 +108,36 @@ class _MainPageState extends State<MainPage> {
       style: TextStyle(
         fontFamily: 'FredokaOne',
         fontSize: 30,
-        color: (_isDay) ? Colors.blueGrey : Colors.white,
+        color: (!_darkMode) ? Colors.blueGrey : Colors.white,
       ),
     );
   }
 
   Text _getLabel() {
+    var label;
+
+    switch (_hour) {
+      case 0:
+        label = "night";
+        break;
+      case 6:
+        label = "morning";
+        break;
+      case 12:
+        label = "midday";
+        break;
+      case 18:
+        label = "evening";
+        break;
+      default:
+    }
+
     return Text(
-      (_isDay) ? "Day" : "Night",
+      label,
       style: TextStyle(
         fontFamily: 'FredokaOne',
         fontSize: 20,
-        color: (_isDay) ? Colors.blueGrey : Colors.white,
+        color: (!_darkMode) ? Colors.blueGrey : Colors.white,
       ),
     );
   }
@@ -119,7 +155,7 @@ class _MainPageState extends State<MainPage> {
       style: TextStyle(
         fontFamily: 'FredokaOne',
         fontSize: 20,
-        color: (_isDay) ? Colors.blueGrey : Colors.white,
+        color: (!_darkMode) ? Colors.blueGrey : Colors.white,
       ),
     );
   }
@@ -141,14 +177,14 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
             AnimatedOpacity(
-              opacity: (_isDay) ? 1.0 : 0.0,
+              opacity: (_hour == 0) ? 0.0 : 1.0,
               duration: Duration(milliseconds: 800),
               child: _getImage(),
             ),
             ClockButton(
               onDayChange: _onDayChange,
               onTimeChange: _onTimeChange,
-              defaultDay: _isDay,
+              defaultDay: _darkMode,
             ),
           ],
         ),

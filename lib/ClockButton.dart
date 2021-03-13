@@ -8,8 +8,8 @@ class ClockButton extends StatefulWidget {
     @required this.defaultDay,
   }) : super(key: key);
 
-  final Function onDayChange;
-  final Function onTimeChange;
+  final Function onDayChange; //fired at 18 and
+  final Function onTimeChange; //fired each 6 hours
   final bool defaultDay; //value set from widget's parent
 
   @override
@@ -17,21 +17,24 @@ class ClockButton extends StatefulWidget {
 }
 
 class _ClockButtonState extends State<ClockButton> {
-  bool _newDay = false;
-  int _hour = 0;
+  bool _aNewDayStarts;
+  int _hour;
 
   @override
   void initState() {
     setState(() {
       if (widget.defaultDay != null) {
         if (widget.defaultDay) {
-          _newDay = widget
+          _aNewDayStarts = widget
               .defaultDay; //start value set from local widget constructor param, given from parent
           _hour = 6; //local logic
         } else {
-          _newDay = false;
+          _aNewDayStarts = false;
           _hour = 0; //local logic
         }
+      } else {
+        _aNewDayStarts = false;
+        _hour = 0;
       }
     });
 
@@ -45,29 +48,25 @@ class _ClockButtonState extends State<ClockButton> {
   void _onPress() {
     //each time state is set, build method is executed and all conditionnal displays are re-evaluated
     setState(() {
-      _hour += 6;
-
-      if (_hour == 24) _hour = 0;
-
-      _newDay = (_hour >= 6 && _hour <= 18);
+      if (_hour == 18) {
+        _hour = 0;
+        _aNewDayStarts = true;
+        widget.onDayChange(
+          _aNewDayStarts,
+        ); //calling back parent method and give local state value
+      } else {
+        _hour += 6;
+        _aNewDayStarts = false;
+      }
     });
 
-    if (_hour >= 6 || _hour <= 18) {
-      widget.onDayChange(
-        _newDay,
-      ); //calling back parent method and give local state value
-      widget.onTimeChange(
-        _hour,
-      );
-    } else {
-      widget.onTimeChange(
-        _hour,
-      );
-    }
+    widget.onTimeChange(
+      _hour,
+    );
   }
 
   Color _getColor() {
-    return (_newDay) ? Colors.yellow[600] : Colors.blueGrey;
+    return (_aNewDayStarts) ? Colors.yellow[600] : Colors.blueGrey;
   }
 
   @override
