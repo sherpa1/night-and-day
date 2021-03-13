@@ -15,7 +15,7 @@ class _MainPageState extends State<MainPage> {
   bool _darkMode; //from >=18 to <6
   int _dayMoment;
   DateTime _now;
-  int _counter;
+  int _counter; //each N seconds call back parent widget
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -28,6 +28,7 @@ class _MainPageState extends State<MainPage> {
       _dayMoment = _getDayMoment(_now.hour);
     });
 
+    //update time each N second(s)
     Timer.periodic(Duration(seconds: 1), (timer) {
       _onTimerUpdate();
     });
@@ -106,7 +107,7 @@ class _MainPageState extends State<MainPage> {
     return _now.toString().split(" ")[0];
   }
 
-  Text _getToday() {
+  Text _getTodayText() {
     return Text(
       _getTodayDate(),
       style: TextStyle(
@@ -146,7 +147,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Text _getTime() {
+  Text _getTimeText() {
     var hour =
         (_now.hour < 10) ? "0" + _now.hour.toString() : _now.hour.toString();
     var minute = (DateTime.now().minute < 10)
@@ -167,13 +168,12 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _now = _now.add(
         new Duration(
-          days: 1,
+          days: 1, //add 1 day to current Date
         ),
       );
     });
 
     final snackBar = SnackBar(content: Text("Today is ${_getTodayDate()}"));
-    //Scaffold.of(context).showSnackBar(snackBar);//can't use classic syntax because we are outside build method
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
@@ -183,7 +183,7 @@ class _MainPageState extends State<MainPage> {
         _counter++;
       } else {
         _counter = 0;
-        _onTimeChange(1);
+        _onTimeChange(1); //add 1 day to current Date when counter == 10
       }
     });
   }
@@ -199,13 +199,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key:
-          _scaffoldKey, //store context for using it inside _onCharacterRemoved method and showing SnackBar
-
+      key: _scaffoldKey,
       body: AnimatedContainer(
-        // Define how long the animation should take.
         duration: Duration(seconds: 1),
-        // Provide an optional curve to make the animation feel smoother.
         curve: Curves.fastOutSlowIn,
         width: double.infinity, //full width
         color: _getBackgroundColor(),
@@ -214,9 +210,9 @@ class _MainPageState extends State<MainPage> {
           children: <Widget>[
             Column(
               children: [
-                _getToday(),
+                _getTodayText(),
                 _getDayMomentText(),
-                _getTime(),
+                _getTimeText(),
               ],
             ),
             _getImage(),

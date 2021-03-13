@@ -38,7 +38,7 @@ class _ClockButtonState extends State<ClockButton> {
   }
 
   void _onPress() {
-    widget.onTimeChange(6);
+    widget.onTimeChange(6); //add 6 hours to current Date
   }
 
   Color _getColor() {
