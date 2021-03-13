@@ -15,6 +15,7 @@ class _MainPageState extends State<MainPage> {
   bool _darkMode; //from >=18 to <6
   int _dayMoment;
   DateTime _now;
+  int _counter;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -22,16 +23,13 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     setState(() {
       _now = DateTime.now();
-
+      _counter = 0;
       _darkMode = _isDarkMode(_now.hour);
       _dayMoment = _getDayMoment(_now.hour);
     });
 
-    Timer.periodic(Duration(seconds: 20), (timer) {
-      //each minute, add an hour
-      setState(() {
-        _onTimeChange(1);
-      });
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      _onTimerUpdate();
     });
 
     super.initState();
@@ -148,12 +146,12 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Text _getHour() {
+  Text _getTime() {
     var hour =
         (_now.hour < 10) ? "0" + _now.hour.toString() : _now.hour.toString();
-    var minute = (_now.minute < 10)
-        ? "0" + _now.minute.toString()
-        : _now.minute.toString();
+    var minute = (DateTime.now().minute < 10)
+        ? "0" + DateTime.now().minute.toString()
+        : DateTime.now().minute.toString();
 
     return Text(
       hour + ":" + minute,
@@ -177,6 +175,17 @@ class _MainPageState extends State<MainPage> {
     final snackBar = SnackBar(content: Text("Today is ${_getTodayDate()}"));
     //Scaffold.of(context).showSnackBar(snackBar);//can't use classic syntax because we are outside build method
     _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  void _onTimerUpdate() {
+    setState(() {
+      if (_counter < 10) {
+        _counter++;
+      } else {
+        _counter = 0;
+        _onTimeChange(1);
+      }
+    });
   }
 
   void _onTimeChange(int hoursToAdd) {
@@ -207,7 +216,7 @@ class _MainPageState extends State<MainPage> {
               children: [
                 _getToday(),
                 _getDayMomentText(),
-                _getHour(),
+                _getTime(),
               ],
             ),
             _getImage(),
