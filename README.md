@@ -4,6 +4,10 @@ Illustration de la gestion de l'état applicatif dans Flutter
 
 ---
 
+## Version Provider
+
+https://pub.dev/packages/provider
+
 ---
 
 ## Commandes utiles
