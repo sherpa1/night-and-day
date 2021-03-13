@@ -119,8 +119,15 @@ class MainPage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       body: Consumer<Today>(
-        builder: (context, now, child) => AnimatedContainer(
-          duration: Duration(seconds: 1),
+        builder: (
+          context,
+          now,
+          child,
+        ) =>
+            AnimatedContainer(
+          duration: Duration(
+            seconds: 1,
+          ),
           curve: Curves.fastOutSlowIn,
           width: double.infinity, //full width
           color: _getBackgroundColor(),
@@ -141,7 +148,7 @@ class MainPage extends StatelessWidget {
                   darkMode: now.isDarkMode(),
                   now: now,
                 ),
-              )
+              ),
             ],
           ),
         ),
