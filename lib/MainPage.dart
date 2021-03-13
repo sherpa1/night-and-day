@@ -1,62 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:night_and_day/ClockButton.dart';
-import 'dart:async';
+import 'package:night_and_day/models/Today.dart';
+import 'package:provider/provider.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends StatelessWidget {
   MainPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  bool _darkMode; //from >=18 to <6
-  int _dayMoment;
-  DateTime _now;
-  int _counter; //each N seconds call back parent widget
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  @override
-  void initState() {
-    setState(() {
-      _now = DateTime.now();
-      _counter = 0;
-      _darkMode = _isDarkMode(_now.hour);
-      _dayMoment = _getDayMoment(_now.hour);
-    });
-
-    //update time each N second(s)
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      _onTimerUpdate();
-    });
-
-    super.initState();
-  }
-
-  bool _isDarkMode(int hour) {
-    if (hour >= 18 || hour < 6) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  int _getDayMoment(int hour) {
-    if (hour < 6)
-      return 0;
-    else if (hour < 12)
-      return 6;
-    else if (hour < 18)
-      return 12;
-    else
-      return 18;
-  }
-
   Image _getImage() {
-    switch (_dayMoment) {
+    Today now = _scaffoldKey.currentContext.read<Today>();
+    switch (now.dayMoment()) {
       case 0:
         return Image(
           width: 250,
@@ -85,7 +41,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   Color _getBackgroundColor() {
-    switch (_dayMoment) {
+    Today now = _scaffoldKey.currentContext.read<Today>();
+    switch (now.dayMoment()) {
       case 0:
         return Colors.grey.shade900;
         break;
@@ -103,17 +60,14 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  String _getTodayDate() {
-    return _now.toString().split(" ")[0];
-  }
-
   Text _getTodayText() {
+    Today now = _scaffoldKey.currentContext.read<Today>();
     return Text(
-      _getTodayDate(),
+      now.dateToString(),
       style: TextStyle(
         fontFamily: 'FredokaOne',
         fontSize: 30,
-        color: (_darkMode) ? Colors.white : Colors.cyan[800],
+        color: (now.isDarkMode()) ? Colors.white : Colors.cyan[800],
       ),
     );
   }
@@ -121,7 +75,9 @@ class _MainPageState extends State<MainPage> {
   Text _getDayMomentText() {
     var label;
 
-    switch (_dayMoment) {
+    Today now = _scaffoldKey.currentContext.read<Today>();
+
+    switch (now.dayMoment()) {
       case 0:
         label = "night";
         break;
@@ -142,86 +98,54 @@ class _MainPageState extends State<MainPage> {
       style: TextStyle(
         fontFamily: 'FredokaOne',
         fontSize: 20,
-        color: (_darkMode) ? Colors.white : Colors.cyan[800],
+        color: (now.isDarkMode()) ? Colors.white : Colors.cyan[800],
       ),
     );
   }
 
   Text _getTimeText() {
-    var hour =
-        (_now.hour < 10) ? "0" + _now.hour.toString() : _now.hour.toString();
-    var minute = (DateTime.now().minute < 10)
-        ? "0" + DateTime.now().minute.toString()
-        : DateTime.now().minute.toString();
+    Today now = _scaffoldKey.currentContext.read<Today>();
 
     return Text(
-      hour + ":" + minute,
+      now.timeToString(),
       style: TextStyle(
         fontFamily: 'FredokaOne',
         fontSize: 20,
-        color: (_darkMode) ? Colors.white : Colors.cyan[800],
+        color: (now.isDarkMode()) ? Colors.white : Colors.cyan[800],
       ),
     );
-  }
-
-  void _onDayChange(bool day) {
-    setState(() {
-      _now = _now.add(
-        new Duration(
-          days: 1, //add 1 day to current Date
-        ),
-      );
-    });
-
-    final snackBar = SnackBar(content: Text("Today is ${_getTodayDate()}"));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
-
-  void _onTimerUpdate() {
-    setState(() {
-      if (_counter < 10) {
-        _counter++;
-      } else {
-        _counter = 0;
-        _onTimeChange(1); //add 1 day to current Date when counter == 10
-      }
-    });
-  }
-
-  void _onTimeChange(int hoursToAdd) {
-    setState(() {
-      _now = _now.add(Duration(hours: hoursToAdd));
-      _dayMoment = _getDayMoment(_now.hour);
-      _darkMode = _isDarkMode(_now.hour);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: AnimatedContainer(
-        duration: Duration(seconds: 1),
-        curve: Curves.fastOutSlowIn,
-        width: double.infinity, //full width
-        color: _getBackgroundColor(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Column(
-              children: [
-                _getTodayText(),
-                _getDayMomentText(),
-                _getTimeText(),
-              ],
-            ),
-            _getImage(),
-            ClockButton(
-              onDayChange: _onDayChange,
-              onTimeChange: _onTimeChange,
-              defaultDay: _darkMode,
-            ),
-          ],
+      body: Consumer<Today>(
+        builder: (context, now, child) => AnimatedContainer(
+          duration: Duration(seconds: 1),
+          curve: Curves.fastOutSlowIn,
+          width: double.infinity, //full width
+          color: _getBackgroundColor(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Column(
+                children: [
+                  _getTodayText(),
+                  _getDayMomentText(),
+                  _getTimeText(),
+                ],
+              ),
+              _getImage(),
+              ChangeNotifierProvider(
+                create: (context) => Today(),
+                child: ClockButton(
+                  darkMode: now.isDarkMode(),
+                  now: now,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

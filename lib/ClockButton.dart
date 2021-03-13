@@ -1,52 +1,28 @@
+import 'package:night_and_day/models/Today.dart';
 import 'package:flutter/material.dart';
 
-class ClockButton extends StatefulWidget {
+class ClockButton extends StatelessWidget {
   ClockButton({
     Key key,
-    @required this.onDayChange,
-    @required this.onTimeChange,
-    @required this.defaultDay,
+    @required this.now,
+    @required this.darkMode,
   }) : super(key: key);
 
-  final Function onDayChange; //fired at 18 and
-  final Function onTimeChange;
-  final bool defaultDay; //value set from widget's parent
-
-  @override
-  _ClockButtonState createState() => _ClockButtonState();
-}
-
-class _ClockButtonState extends State<ClockButton> {
-  bool _aNewDayStarts;
-
-  @override
-  void initState() {
-    setState(() {
-      if (widget.defaultDay != null) {
-        if (widget.defaultDay) {
-          _aNewDayStarts = widget
-              .defaultDay; //start value set from local widget constructor param, given from parent
-        } else {
-          _aNewDayStarts = false;
-        }
-      } else {
-        _aNewDayStarts = false;
-      }
-    });
-
-    super.initState();
-  }
+  final bool darkMode; //value set from widget's parent
+  final Today now;
 
   void _onPress() {
-    widget.onTimeChange(6); //add 6 hours to current Date
+    now.add(
+      Duration(hours: 6),
+    );
   }
 
   Color _getColor() {
-    return (_aNewDayStarts) ? Colors.yellow[600] : Colors.cyan[800];
+    return (!now.isDarkMode()) ? Colors.yellow[600] : Colors.cyan[800];
   }
 
   Color _getIconColor() {
-    return (_aNewDayStarts) ? Colors.blueGrey[900] : Colors.white;
+    return (!now.isDarkMode()) ? Colors.blueGrey[900] : Colors.white;
   }
 
   @override
