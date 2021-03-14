@@ -142,13 +142,7 @@ class MainPage extends StatelessWidget {
                 ],
               ),
               _getImage(),
-              ChangeNotifierProvider(
-                create: (context) => Today(),
-                child: ClockButton(
-                  darkMode: now.isDarkMode(),
-                  now: now,
-                ),
-              ),
+              ClockButton(),
             ],
           ),
         ),
