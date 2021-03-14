@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-import 'package:night_and_day/models/';
+import 'package:night_and_day/models/Today.dart';
 
 enum Actions { Add }
 
 Today hourReducer(Today state, dynamic action) {
-  if (action == Actions.Increment) {
-    return state + 1;
+  if (action == Actions.Add) {
+    state.date = state.add(Duration(hours: 1));
+    return state;
   }
 
   return state;
@@ -303,21 +304,28 @@ class _MainPageState extends State<MainPage> {
 }
 
 class NightAndDay extends StatelessWidget {
+  NightAndDay({this.store});
+
   final String appTitle = "Night & Day";
+  final Store<Today> store;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: appTitle,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return new StoreProvider<Today>(
+      store: store,
+      child: MaterialApp(
+        title: appTitle,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MainPage(title: appTitle),
       ),
-      home: MainPage(title: appTitle),
     );
   }
 }
 
 void main() {
-  runApp(NightAndDay());
+  final store = new Store<Today>(hourReducer, initialState: Today());
+  runApp(NightAndDay(store: store));
 }
