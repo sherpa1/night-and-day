@@ -11,11 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-<<<<<<< HEAD
-  riverpod:
-=======
-  provider:
->>>>>>> provider
+  flutter_riverpod: ^0.13.1
 
   cupertino_icons: ^1.0.0
 

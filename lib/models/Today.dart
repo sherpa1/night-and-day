@@ -1,39 +1,20 @@
-import 'package:flutter/widgets.dart';
 import 'dart:async';
 
-class Today with ChangeNotifier {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class Today {
   Today([DateTime defaultDate]) {
     if (defaultDate == null)
-      this._date = DateTime.now();
+      this.date = DateTime.now();
     else
-      this._date = defaultDate;
-
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      _onTimerUpdate();
-    });
+      this.date = defaultDate;
   }
 
-  DateTime _date;
-  int _counter = 0;
-
-  void _onTimerUpdate() {
-    if (_counter < 10) {
-      _counter++;
-    } else {
-      _counter = 0;
-      _onTimeChange(1); //add 1 day to current Date when counter == 10
-    }
-    this.notifyListeners();
-  }
-
-  void _onTimeChange(int hoursToAdd) {
-    this._date = this._date.add(Duration(hours: hoursToAdd));
-    this.notifyListeners();
-  }
+  DateTime date;
 
   String timeToString() {
     var hour =
-        (_date.hour < 10) ? "0" + _date.hour.toString() : _date.hour.toString();
+        (date.hour < 10) ? "0" + date.hour.toString() : date.hour.toString();
     var minute = (DateTime.now().minute < 10)
         ? "0" + DateTime.now().minute.toString()
         : DateTime.now().minute.toString();
@@ -42,46 +23,65 @@ class Today with ChangeNotifier {
   }
 
   String dateToString() {
-    return this._date.toString().split(" ")[0];
-  }
-
-  DateTime date() {
-    return this._date;
+    return this.date.toString().split(" ")[0];
   }
 
   int hour() {
-    return this._date.hour;
+    return this.date.hour;
   }
 
   int minute() {
-    return this._date.minute;
-  }
-
-  void add(Duration duration) {
-    this._date = this._date.add(duration);
-
-    this.notifyListeners();
+    return this.date.minute;
   }
 
   int dayMoment() {
-    if (this._date.hour < 6)
+    if (this.date.hour < 6)
       return 0;
-    else if (this._date.hour < 12)
+    else if (this.date.hour < 12)
       return 6;
-    else if (this._date.hour < 18)
+    else if (this.date.hour < 18)
       return 12;
     else
       return 18;
   }
 
   bool isDarkMode() {
-    if (this._date.hour < 6)
+    if (this.date.hour < 6)
       return true;
-    else if (this._date.hour < 12)
+    else if (this.date.hour < 12)
       return false;
-    else if (this._date.hour < 18)
+    else if (this.date.hour < 18)
       return false;
     else
       return true;
+  }
+}
+
+class TodayManager extends StateNotifier<Today> {
+  TodayManager(Today today) : super(today ?? Today());
+
+  int counter = 0;
+
+  void add(Duration duration) {
+    state.date.add(duration);
+  }
+
+  void autoAdd() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      onTimerUpdate();
+    });
+  }
+
+  void onTimerUpdate() {
+    if (counter < 10) {
+      counter++;
+    } else {
+      counter = 0;
+      _onTimeChange(1); //add 1 day to current Date when counter == 10
+    }
+  }
+
+  void _onTimeChange(int hoursToAdd) {
+    state.date.add(Duration(hours: hoursToAdd));
   }
 }
