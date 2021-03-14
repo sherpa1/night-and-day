@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   redux:
-
+  flutter_redux:
   cupertino_icons: ^1.0.0
 
 dev_dependencies:
