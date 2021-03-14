@@ -14,72 +14,45 @@ Today hourReducer(Today state, dynamic action) {
   return state;
 }
 
-class ClockButton extends StatefulWidget {
-  ClockButton({
-    Key key,
-    @required this.onDayChange,
-    @required this.onTimeChange,
-    @required this.defaultDay,
-  }) : super(key: key);
+// class ClockButton extends StatelessWidget {
+//   ClockButton({Key key, this.store}) : super(key: key);
 
-  final Function onDayChange; //fired at 18 and
-  final Function onTimeChange;
-  final bool defaultDay; //value set from widget's parent
+//   Store<Today> store;
 
-  @override
-  _ClockButtonState createState() => _ClockButtonState();
-}
+//   void _onPress(Today now) {
+//     now.add(Duration(hours: 6));
+//   }
 
-class _ClockButtonState extends State<ClockButton> {
-  bool _aNewDayStarts;
+//   Color _getColor(Today now) {
+//     return (!now.isDarkMode()) ? Colors.yellow[600] : Colors.cyan[800];
+//   }
 
-  @override
-  void initState() {
-    setState(() {
-      if (widget.defaultDay != null) {
-        if (widget.defaultDay) {
-          _aNewDayStarts = widget
-              .defaultDay; //start value set from local widget constructor param, given from parent
-        } else {
-          _aNewDayStarts = false;
-        }
-      } else {
-        _aNewDayStarts = false;
-      }
-    });
+//   Color _getIconColor(Today now) {
+//     return (!now.isDarkMode()) ? Colors.blueGrey[900] : Colors.white;
+//   }
 
-    super.initState();
-  }
-
-  void _onPress() {
-    widget.onTimeChange(6); //add 6 hours to current Date
-  }
-
-  Color _getColor() {
-    return (_aNewDayStarts) ? Colors.yellow[600] : Colors.cyan[800];
-  }
-
-  Color _getIconColor() {
-    return (_aNewDayStarts) ? Colors.blueGrey[900] : Colors.white;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-      child: Icon(
-        Icons.alarm_add,
-        color: _getIconColor(),
-      ),
-      onPressed: () => _onPress(),
-      color: _getColor(),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return new StoreProvider<Today>(
+//       store: store,
+//       child: FlatButton(
+//         child: Icon(
+//           Icons.alarm_add, /*color: _getIconColor(now)*/
+//         ),
+//         // color: _getColor(now),
+//         // onPressed: () => _onPress(now),
+//         onPressed: () => print('press'),
+//       ),
+//     );
+//   }
+// }
 
 class MainPage extends StatelessWidget {
-  MainPage({Key key}) : super(key: key);
+  MainPage({Key key, this.store}) : super(key: key);
 
-  Image _getImage(Today now) {
+  final Store<Today> store;
+
+  Image _getImage() {
     switch (now.dayMoment()) {
       case 0:
         return Image(
@@ -108,7 +81,7 @@ class MainPage extends StatelessWidget {
     }
   }
 
-  Color _getBackgroundColor(Today now) {
+  Color _getBackgroundColor() {
     switch (now.dayMoment()) {
       case 0:
         return Colors.grey.shade900;
@@ -127,7 +100,7 @@ class MainPage extends StatelessWidget {
     }
   }
 
-  Text _getTodayText(Today now) {
+  Text _getTodayText() {
     return Text(
       now.dateToString(),
       style: TextStyle(
@@ -138,7 +111,7 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Text _getDayMomentText(Today now) {
+  Text _getDayMomentText() {
     var label;
 
     switch (now.dayMoment()) {
@@ -167,7 +140,7 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Text _getTimeText(Today now) {
+  Text _getTimeText() {
     return Text(
       now.timeToString(),
       style: TextStyle(
@@ -180,27 +153,36 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnimatedContainer(
-        duration: Duration(
-          seconds: 1,
-        ),
-        curve: Curves.fastOutSlowIn,
-        width: double.infinity, //full width
-        color: _getBackgroundColor(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Column(
-              children: [
-                _getTodayText(model),
-                _getDayMomentText(model),
-                _getTimeText(model),
-              ],
-            ),
-            _getImage(model),
-            ClockButton(now: model),
-          ],
+    return new StoreProvider<Today>(
+      store: store,
+      child: Scaffold(
+        body: AnimatedContainer(
+          duration: Duration(
+            seconds: 1,
+          ),
+          curve: Curves.fastOutSlowIn,
+          width: double.infinity, //full width
+          //color: _getBackgroundColor(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              new StoreConnector<Today, Today>(
+                converter: (store) => store.state,
+                builder: (context, today) {
+                  return new Text(today.timeToString());
+                },
+              ),
+              Column(
+                children: [
+                  _getTodayText(),
+                  _getDayMomentText(),
+                  _getTimeText(),
+                ],
+              ),
+              _getImage(),
+              //ClockButton(),
+            ],
+          ),
         ),
       ),
     );
@@ -218,13 +200,15 @@ class NightAndDay extends StatelessWidget {
     return new StoreProvider<Today>(
       store: store,
       child: MaterialApp(
-        title: appTitle,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: MainPage(),
-      ),
+          title: appTitle,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: new StoreProvider<Today>(
+            store: store,
+            child: MainPage(store: store),
+          )),
     );
   }
 }
