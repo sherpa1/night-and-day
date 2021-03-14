@@ -4,7 +4,23 @@ Illustration de la gestion de l'état applicatif dans Flutter
 
 ---
 
+<<<<<<< HEAD
 ## Version Riverpod
+=======
+## Version Provider
+
+https://pub.dev/packages/provider
+
+https://www.didierboelens.com/fr/2019/07/provider-points-dint%C3%A9r%C3%AAt-points-dattention/
+
+https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple#accessing-the-state
+
+https://github.com/flutter/samples/blob/master/provider_counter/lib/main.dart
+
+https://github.com/flutter/samples/tree/master/provider_shopper
+
+---
+>>>>>>> provider
 
 ## Commandes utiles
 
