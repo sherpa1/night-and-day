@@ -11,8 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_riverpod: ^0.13.1
-
+  scoped_model:
   cupertino_icons: ^1.0.0
 
 dev_dependencies:

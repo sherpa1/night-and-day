@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:night_and_day/models/Today.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-final StateNotifierProvider todayProvider = StateNotifierProvider((ref) {
-  return TodayManager(Today());
-});
+class ClockButton extends StatelessWidget {
+  ClockButton({Key key, this.now}) : super(key: key);
 
-class ClockButton extends ConsumerWidget {
-  ClockButton({Key key}) : super(key: key);
+  final Today now;
 
   void _onPress(Today now) {
-    now.date.add(Duration(hours: 6));
+    now.add(Duration(hours: 6));
   }
 
   Color _getColor(Today now) {
@@ -22,19 +20,16 @@ class ClockButton extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final Today now = context.read(todayProvider).state;
-
+  Widget build(BuildContext context) {
     return FlatButton(
-        child: Icon(Icons.alarm_add, color: _getIconColor(now)),
-        color: _getColor(now),
-        onPressed: () => now.date.add(Duration(hours: 6))
-        //context.read(todayProvider).add(Duration(hours: 6)),
-        );
+      child: Icon(Icons.alarm_add, color: _getIconColor(now)),
+      color: _getColor(now),
+      onPressed: () => _onPress(now),
+    );
   }
 }
 
-class MainPage extends ConsumerWidget {
+class MainPage extends StatelessWidget {
   MainPage({Key key}) : super(key: key);
 
   Image _getImage(Today now) {
@@ -137,54 +132,62 @@ class MainPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final now = watch(todayProvider.state);
-
-    return Scaffold(
-      body: AnimatedContainer(
-        duration: Duration(
-          seconds: 1,
-        ),
-        curve: Curves.fastOutSlowIn,
-        width: double.infinity, //full width
-        color: _getBackgroundColor(now),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Column(
-              children: [
-                _getTodayText(now),
-                _getDayMomentText(now),
-                _getTimeText(now),
-              ],
-            ),
-            _getImage(now),
-            ClockButton(),
-          ],
+  Widget build(BuildContext context) {
+    return ScopedModelDescendant<Today>(
+      builder: (context, child, model) => Scaffold(
+        body: AnimatedContainer(
+          duration: Duration(
+            seconds: 1,
+          ),
+          curve: Curves.fastOutSlowIn,
+          width: double.infinity, //full width
+          color: _getBackgroundColor(model),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ScopedModelDescendant<Today>(
+                builder: (context, child, model) => Column(
+                  children: [
+                    _getTodayText(model),
+                    _getDayMomentText(model),
+                    _getTimeText(model),
+                  ],
+                ),
+              ),
+              ScopedModelDescendant<Today>(
+                builder: (context, child, model) => _getImage(model),
+              ),
+              ScopedModelDescendant<Today>(
+                builder: (context, child, model) => ClockButton(now: model),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class NightAndDay extends ConsumerWidget {
+class NightAndDay extends StatelessWidget {
   final String appTitle = "Night & Day";
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: appTitle,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MainPage(),
-    );
+        title: appTitle,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: ScopedModel<Today>(
+          model: Today(),
+          child: MainPage(),
+        ));
   }
 }
 
 void main() {
-  runApp(ProviderScope(
-    child: NightAndDay(),
-  ));
+  runApp(
+    NightAndDay(),
+  );
 }

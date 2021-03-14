@@ -1,16 +1,46 @@
 import 'dart:async';
+import 'package:scoped_model/scoped_model.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class Today {
+class Today extends Model {
   Today([DateTime defaultDate]) {
     if (defaultDate == null)
       this.date = DateTime.now();
     else
       this.date = defaultDate;
+
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      onTimerUpdate();
+    });
   }
 
   DateTime date;
+
+  int counter = 0;
+
+  void add(Duration duration) {
+    date = date.add(duration);
+    notifyListeners();
+  }
+
+  void autoAdd() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      onTimerUpdate();
+    });
+  }
+
+  void onTimerUpdate() {
+    if (counter < 10) {
+      counter++;
+    } else {
+      counter = 0;
+      _onTimeChange(1); //add 1 day to current Date when counter == 10
+    }
+    notifyListeners();
+  }
+
+  void _onTimeChange(int hoursToAdd) {
+    date = date.add(Duration(hours: hoursToAdd));
+  }
 
   String timeToString() {
     var hour =
@@ -54,34 +84,5 @@ class Today {
       return false;
     else
       return true;
-  }
-}
-
-class TodayManager extends StateNotifier<Today> {
-  TodayManager(Today today) : super(today ?? Today());
-
-  int counter = 0;
-
-  void add(Duration duration) {
-    state.date.add(duration);
-  }
-
-  void autoAdd() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      onTimerUpdate();
-    });
-  }
-
-  void onTimerUpdate() {
-    if (counter < 10) {
-      counter++;
-    } else {
-      counter = 0;
-      _onTimeChange(1); //add 1 day to current Date when counter == 10
-    }
-  }
-
-  void _onTimeChange(int hoursToAdd) {
-    state.date.add(Duration(hours: hoursToAdd));
   }
 }
